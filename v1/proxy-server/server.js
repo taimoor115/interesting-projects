@@ -18,15 +18,10 @@ app.use((req, res) => {
   return proxy.web(req, res, { target: redirectTo, changeOrigin: true });
 });
 
-proxy.on("proxyReq", (proxyReq, req) => {
-  console.log(`Proxying request for ${req.url} to ${req.headers.host}`);
-  const url = req.url;
-  if (url === "/") {
-    console.log(`Redirecting to ${BASE_URI}`);
 
-    proxyReq.path = `${proxyReq.path}/index.html`;
-    console.warn(url);
-  }
+proxy.on("proxyReq", (proxyReq, req, res) => {
+  const url = req.url;
+  if (url === "/") proxyReq.path += "index.html";
 });
 app.listen(PORT, () => {
   console.warn(`Reverse proxy is running on port ${PORT}`);
