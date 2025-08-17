@@ -2,9 +2,30 @@ const express = require("express");
 const { ECSClient, RunTaskCommand } = require("@aws-sdk/client-ecs");
 const { generateSlug } = require("random-word-slugs");
 const dotenv = require("dotenv");
+const { Server } = require("socket-io");
+const Redis = require("ioredis");
 dotenv.config("./env");
 
-const app = express();
+const subscriber = new Redis({
+  host:
+    process.env.REDIS_HOST ||
+    "redis-18742.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com",
+  port: parseInt(process.env.REDIS_PORT || "18742", 10),
+  password: process.env.REDIS_PASSWORD || "",
+  tls: process.env.REDIS_TLS === "true" ? {} : undefined,
+  lazyConnect: true,
+});
+
+const io = new Server({ cors: "*" });
+
+io.on("connection", (socket) => {
+  socket.on("subscribe", (channel) => {
+    socket.join(channel);
+    socket.emit("message", `Joined ${channel}`);
+  });
+});
+
+io.listen(9002, () => console.log("Socket Server 9002"));
 
 app.use(express.json());
 
@@ -68,6 +89,15 @@ app.post("/project", async (req, res) => {
   });
 });
 
+async function initRedisSubscribe() {
+  console.log("Subscribed to logs....");
+  subscriber.psubscribe("logs:*");
+  subscriber.on("pmessage", (pattern, channel, message) => {
+    io.to(channel).emit("message", message);
+  });
+}
+
+initRedisSubscribe();
 app.listen(PORT, () => {
   console.log(`API server is running on port ${PORT}`);
 });
