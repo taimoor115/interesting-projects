@@ -47,14 +47,15 @@ async function init() {
 
         const command = new PutObjectCommand({
           Bucket: "s3-assets-store",
-          Key: `__outputs/${PROJECT_ID}/${filePath}`,
+          Key: `__outputs/${PROJECT_ID}/${file}`,
           Body: fs.createReadStream(filePath),
           ContentType: mime.lookup(filePath),
         });
 
         const result = await s3Client.send(command);
-        console.log("🚀 ~ init ~ result:", result);
       }
+
+      console.log("🚀 ============== COMPLETED =============== 🚀");
     } else {
       console.error(`Build process exited with code ${code}`);
     }
