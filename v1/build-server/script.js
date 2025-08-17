@@ -12,12 +12,15 @@ const s3Client = new S3Client({
   },
 });
 
+
+console.log("Working...");
 const PROJECT_ID = process.env.PROJECT_ID;
 
 async function init() {
   console.log("Starting build server script...");
   const outputDir = path.join(__dirname, "output");
   console.log(`Output directory: ${outputDir}`);
+
 
   const p = exec(`cd ${outputDir} && npm install && npm run build`);
   p.stdout.on("data", function (data) {
