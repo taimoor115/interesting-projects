@@ -66,6 +66,19 @@ app.listen(PORT, () => {
   console.log(`Log server running on http://localhost:${PORT}`);
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+// ============ PRODUCTION_CODE =====================
 // const express = require("express");
 // const { ECSClient, RunTaskCommand } = require("@aws-sdk/client-ecs");
 // const { generateSlug } = require("random-word-slugs");
@@ -126,7 +139,7 @@ app.listen(PORT, () => {
 //     overrides: {
 //       containerOverrides: [
 //         {
-//           name: "vercel-projects-deployment",
+//           name: "",
 //           environment: [
 //             { name: "GITHUB_REPOSITORY_URL", value: gitURL },
 //             { name: "PROJECT_ID", value: projectSlug },
