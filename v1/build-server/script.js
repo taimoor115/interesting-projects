@@ -2,31 +2,24 @@ const path = require("path");
 const { exec } = require("child_process");
 const fs = require("fs");
 const mime = require("mime-types");
-const Redis = require("ioredis");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const Redis = require("ioredis");
 
+// Connect to local Redis
 const publisher = new Redis({
-  host:
-    process.env.REDIS_HOST ||
-    "redis-18742.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com",
-  port: parseInt(process.env.REDIS_PORT || "18742", 10),
-  password: process.env.REDIS_PASSWORD || "Swkefr8L8Uhaswm7n2IagbU0pAxKPsYw",
-  tls: process.env.REDIS_TLS === "true" ? {} : undefined,
-  lazyConnect: true,
+  host: "host.docker.internal", // Use this for Docker on Windows/macOS
+  port: 6379,
 });
 
-publisher.on("connect", () => console.log("Redis: connecting..."));
-publisher.on("ready", () => console.log("Redis: ready"));
-publisher.on("error", (err) => console.error("Redis error:", err));
-publisher.on("close", () => console.log("Redis: connection closed"));
+publisher.on("connect", () => {
+  console.log("Connected to Redis locally!");
+});
 
-(async () => {
-  try {
-    await publisher.connect();
-  } catch (err) {
-    console.error("Failed to connect to Redis:", err);
-  }
-})();
+publisher.on("error", (err) => {
+  console.error("Redis error:", err);
+});
+
+console.warn("===========TESTING=============");
 
 const s3Client = new S3Client({
   region: "us-east-1",
@@ -37,6 +30,7 @@ const s3Client = new S3Client({
 });
 
 const PROJECT_ID = process.env.PROJECT_ID;
+
 function publishLog(log) {
   publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify({ log }));
 }
@@ -53,40 +47,49 @@ async function init() {
     publishLog(data.toString());
   });
 
-  p.stdout.on("error", function (data) {
-    console.log("Error", data.toString());
+  p.stderr.on("data", function (data) {
+    console.error("Error:", data.toString());
     publishLog(`error: ${data.toString()}`);
   });
 
   p.on("close", async function () {
     console.log("Build Complete");
-    publishLog(`Build Complete`);
-    const distFolderPath = path.join(__dirname, "output", "dist");
+    publishLog("Build Complete");
+
+    const distFolderPath = path.join(outDirPath, "dist");
+    if (!fs.existsSync(distFolderPath)) {
+      console.error("Dist folder not found!");
+      return;
+    }
+
     const distFolderContents = fs.readdirSync(distFolderPath, {
       recursive: true,
     });
 
-    publishLog(`Starting to upload`);
+    publishLog("Starting to upload");
     for (const file of distFolderContents) {
       const filePath = path.join(distFolderPath, file);
       if (fs.lstatSync(filePath).isDirectory()) continue;
 
-      console.log("uploading", filePath);
-      publishLog(`uploading ${file}`);
+      console.log("Uploading", filePath);
+      publishLog(`Uploading ${file}`);
 
       const command = new PutObjectCommand({
-        Bucket: "vercel-clone-outputs",
+        Bucket: "vercel-projects-deployment",
         Key: `__outputs/${PROJECT_ID}/${file}`,
         Body: fs.createReadStream(filePath),
-        ContentType: mime.lookup(filePath),
+        ContentType: mime.lookup(filePath) || "application/octet-stream",
       });
 
       await s3Client.send(command);
-      publishLog(`uploaded ${file}`);
-      console.log("uploaded", filePath);
+      publishLog(`Uploaded ${file}`);
+      console.log("Uploaded", filePath);
     }
-    publishLog(`Done`);
+
+    publishLog("Done");
     console.log("Done...");
+
+    publishLog(`Check deploy site ${PROJECT_ID}.localhost:8000`);
   });
 }
 

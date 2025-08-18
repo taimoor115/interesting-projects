@@ -5,8 +5,7 @@ const PORT = 8000;
 const app = express();
 const proxy = httpProxy.createProxy();
 
-const BASE_URI =
-  "https://s3-assets-store.s3.us-east-1.amazonaws.com/__outputs/";
+const BASE_URI = "";
 
 app.use((req, res) => {
   const hostname = req.hostname;
