@@ -24,17 +24,17 @@ From the `v1/build-server` directory where the Dockerfile exists:
 
 - Build with a Docker Hub (or registry) tag:
   ```powershell
-  docker build -t taimoorhussain/your_image_name:tagname .
+  docker build -t docker_hub_username/your_image_name:tagname .
   ```
 
 - Tag latest (optional):
   ```powershell
-  docker tag taimoorhussain/your_image_name:tagname taimoorhussain/your_image_name:latest
+  docker tag docker_hub_username/your_image_name:tagname docker_hub_username/your_image_name:latest
   ```
 
 - Push to Docker Hub:
   ```powershell
-  docker push taimoorhussain/your_image_name:latest
+  docker push docker_hub_username/your_image_name:latest
   ```
 
 ## Docker up / run
@@ -51,7 +51,7 @@ docker run -it \
   -e PROJECT_ID=PROJECT_ID \
   -e GITHUB_REPOSITORY_URL="https://github.com/owner/repo.git" \
   --name your_image_name \
-  taimoorhussain/your_image_name:latest
+  docker_hub_username/your_image_name:latest
 ```
 
 Notes:
