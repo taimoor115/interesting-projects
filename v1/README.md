@@ -106,7 +106,3 @@ git commit -m "Add build-server run instructions"
 git push origin main
 ```
 
-If you want this README in another location, copy or move `v1/build-server/README.md` to the desired path before committing.
-
----
-If you need a `docker-compose.yml` example or CI pipeline example for building and pushing the image, say so and a sample will be provided.
