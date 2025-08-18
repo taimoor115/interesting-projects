@@ -11,7 +11,7 @@ This document explains how to build, run and push the build server Docker image,
 
 ## S3
 - Bucket name: replace with your bucket name, e.g. `my-build-bucket`
-- S3 base URL (public objects): `https://{BUCKET_NAME}.s3.amazonaws.com/`
+- S3 base URL (public objects): `https://{BUCKET_NAME}.s3.amazonaws.com//__outputs`
   - If using region-specific endpoints, use the appropriate URL for your region.
 
 ## Docker — build and push
