@@ -8,9 +8,6 @@ const analyticsSchema = new mongoose.Schema(
       index: true,
     },
     ip_address: String,
-    country: String,
-    device: String,
-    referrer: String,
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
