@@ -1,20 +1,27 @@
-function toBase62(deci) {
-    var hash_str, s;
-    s = "012345689abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    hash_str = "";
+function toBase62(num, length = 7) {
+    const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
   
-    while (deci > 0) {
-      var b = parseInt(deci % 62);
-      var a = s[b] ? s[b] : "";
-      hash_str = hash_str + a;
-      deci = parseInt(deci / 62);
-      console.log("b", b, "a", a, "deci", deci);
+    if (num === 0) result = "0";
+  
+    while (num > 0) {
+      const remainder = num % 62;
+      result = chars[remainder] + result; // prepend
+      num = Math.floor(num / 62);
     }
   
-    return hash_str;
+    // ensure always fixed length (pad with leading '0's)
+    if (result.length < length) {
+      result = result.padStart(length, "0");
+    }
+  
+    // if somehow result is longer than desired length → keep last `length` chars
+    if (result.length > length) {
+      result = result.slice(-length);
+    }
+  
+    return result;
   }
   
-  module.exports = {
-      toBase62,
-  };
+  module.exports = { toBase62 };
   

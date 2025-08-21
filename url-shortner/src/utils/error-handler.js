@@ -34,7 +34,7 @@ class ErrorLogger {
     }
 }
 
-const ErrorHandler = async(err,req,res,next) => {
+const ErrorHandler = async(err, req, res, next) => {
     
     const errorLogger = new ErrorLogger();
 
@@ -50,21 +50,23 @@ const ErrorHandler = async(err,req,res,next) => {
         }
     })
     
-    // console.log(err.description, '-------> DESCRIPTION')
-    // console.log(err.message, '-------> MESSAGE')
-    // console.log(err.name, '-------> NAME')
-    if(err){
+    if(err) {
         await errorLogger.logError(err);
+        
+        // Default status code if not provided
+        const statusCode = err.statusCode || 500;
+        const message = err.message || 'Internal Server Error';
+        
         if(errorLogger.isTrustError(err)){
             if(err.errorStack){
                 const errorDescription = err.errorStack;
-                return res.status(err.statusCode).json({'message': errorDescription})
+                return res.status(statusCode).json({'message': errorDescription});
             }
-            return res.status(err.statusCode).json({'message': err.message })
-        }else{
-            //process exit // terriablly wrong with flow need restart
+            return res.status(statusCode).json({'message': message});
         }
-        return res.status(err.statusCode).json({'message': err.message})
+        
+        // For untrusted errors, don't expose internal error details
+        return res.status(500).json({'message': 'Internal Server Error'});
     }
     next();
 }

@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const analyticsSchema = new mongoose.Schema(
   {
-    short_url: {
+    short_code: {
       type: String,
       required: true,
       index: true,
@@ -17,4 +17,4 @@ const analyticsSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Analytics", analyticsSchema);
+module.exports = mongoose.model("Analytics", analyticsSchema);
