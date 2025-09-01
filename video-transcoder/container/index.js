@@ -27,7 +27,7 @@ const RESOLUTIONS = [
 ];
 
 const s3 = new S3Client({
-  region: "eu-north-1",
+  region: "",
   credentials: {
     accessKeyId: "",
     secretAccessKey: "",
@@ -65,7 +65,7 @@ async function init() {
         .withSize(`${resolution.width}x${resolution.height}`)
         .on("end", async () => {
           const command = new PutObjectCommand({
-            Bucket: "processed-videoes",
+            Bucket: "",
             Key: `transcoded/video-${resolution.name}.mp4`,
             Body: fsOld.createReadStream(path.resolve(output)),
           });
