@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "node-pty-prebuilt-multiarch": "^0.10.1-pre.5",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "termx": "^1.2.5"
   }
 }

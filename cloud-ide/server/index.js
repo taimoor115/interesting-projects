@@ -31,7 +31,11 @@ io.on("connection", (socket) => {
   console.log("✅ A user connected:", socket.id);
 
   socket.on("terminal:write", (data) => {
-    ptyProcess.write(data + "\r");
+    if (data === "\r") {
+      ptyProcess.write("\r");
+    } else {
+      ptyProcess.write(data);
+    }
   });
 
   socket.on("disconnect", () => {
