@@ -3,6 +3,9 @@ const express = require("express");
 const { Server: SocketServer } = require("socket.io");
 const pty = require("node-pty-prebuilt-multiarch");
 const os = require("os");
+const fs = require("fs").promises;
+const path = require("path");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -42,6 +45,33 @@ io.on("connection", (socket) => {
     console.log("❌ User disconnected:", socket.id);
   });
 });
+app.use(cors());
+chokidar.watch("./user").on("all", (event, path) => {
+  io.emit("file:refresh", path);
+  console.log(event, path);
+});
+app.get("/get-file-tree", async (req, res) => {
+  const fileTree = await generateFileTree("./user");
+  res.json({ tree: fileTree });
+});
+async function generateFileTree(directory) {
+  const tree = {};
+  async function buildTree(currentDir, obj) {
+    const files = await fs.readdir(currentDir);
+    for (const file of files) {
+      const filePath = path.join(currentDir, file);
+      const stats = await fs.stat(filePath);
+      if (stats.isDirectory()) {
+        obj[file] = {};
+        await buildTree(filePath, obj[file]);
+      } else {
+        obj[file] = null;
+      }
+    }
+  }
+  await buildTree(directory, tree);
+  return tree;
+}
 
 ptyProcess.onData((data) => {
   io.emit("terminal:data", data);

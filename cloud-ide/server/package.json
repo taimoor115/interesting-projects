@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "chokidar": "^4.0.3",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "node-pty-prebuilt-multiarch": "^0.10.1-pre.5",
     "socket.io": "^4.8.1",
