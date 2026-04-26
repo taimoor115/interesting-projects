@@ -1,6 +1,6 @@
 {
-  "id": "b400125f-9df6-44bf-843f-b7d795a6ee55",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "84c63bc6-8550-4307-a1c7-dbd710c04a9d",
+  "prevId": "b400125f-9df6-44bf-843f-b7d795a6ee55",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -28,6 +28,14 @@
           "notNull": false,
           "default": null
         },
+        "state": {
+          "name": "state",
+          "type": "job_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'SUBMITTED'"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -52,7 +60,19 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.job_status": {
+      "name": "job_status",
+      "schema": "public",
+      "values": [
+        "SUBMITTED",
+        "RUNNABLE",
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

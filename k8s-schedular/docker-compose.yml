@@ -1,16 +1,11 @@
 services:
-  postgres:
-    image: postgres:latest
+  valkey:
+    image: valkey/valkey:latest
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
     ports:
-      - "5432:5432"
+      - "6378:6379"
     volumes:
-      - postgres_data:/var/lib/postgresql
-
+      - valkey_data:/data
 
 volumes:
-  postgres_data:
+  valkey_data: {}
