@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Video Transcoder Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0d0d;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 30px;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #111827, #1a1f2e);
+    border: 1px solid #2d3748;
+    border-radius: 24px;
+    width: 1200px;
+    padding: 48px 56px 40px;
+    box-shadow:
+      0 0 80px rgba(99, 102, 241, 0.15),
+      0 25px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #2d3748;
+  }
+
+  .title-block {}
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 30px;
+    font-weight: 800;
+    color: #f1f5f9;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  h1 span {
+    background: linear-gradient(90deg, #6366f1, #06b6d4, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  .meta-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .pill .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Diagram */
+  .diagram-wrapper {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid #2d3748;
+    border-radius: 16px;
+    padding: 24px 16px;
+    margin-bottom: 32px;
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Tech Stack */
+  .tech-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .tech {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .t1 { background: #1e3a5f; color: #60a5fa; border: 1px solid #2d5a8e; }
+  .t2 { background: #3b1f0a; color: #fb923c; border: 1px solid #7c4010; }
+  .t3 { background: #1a1040; color: #a78bfa; border: 1px solid #4c2a8a; }
+  .t4 { background: #0d2d1a; color: #4ade80; border: 1px solid #1a6638; }
+  .t5 { background: #3b1520; color: #f472b6; border: 1px solid #7c2540; }
+  .t6 { background: #1a2a40; color: #38bdf8; border: 1px solid #1e4d7c; }
+  .t7 { background: #2a1a40; color: #c084fc; border: 1px solid #5a2a8a; }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #2d3748;
+  }
+
+  .author {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .author strong { color: #94a3b8; }
+
+  .date-badge {
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.3);
+    color: #818cf8;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title-block">
+      <div class="badge">⚡ System Design</div>
+      <h1>Video Transcoder <span>Architecture</span></h1>
+      <p class="subtitle">
+        Built a YouTube-style multi-resolution video transcoding pipeline using
+        event-driven design — S3 → SQS → ECS Fargate → FFmpeg → Multi-quality output.
+      </p>
+    </div>
+    <div class="meta-pills">
+      <div class="pill"><span class="dot" style="background:#4ade80"></span>Event Driven</div>
+      <div class="pill"><span class="dot" style="background:#60a5fa"></span>Serverless / Fargate</div>
+      <div class="pill"><span class="dot" style="background:#f472b6"></span>Auto Scaling</div>
+      <div class="pill"><span class="dot" style="background:#fb923c"></span>AWS Native</div>
+    </div>
+  </div>
+
+  <!-- Mermaid Diagram -->
+  <div class="diagram-wrapper">
+    <div class="mermaid">
+flowchart LR
+    A("👤 User\nUploads Video"):::user
+    B[("🪣 S3\nRaw Bucket")]:::s3raw
+    C["📨 SQS Queue\n20s Long Poll"]:::sqs
+    D["⚙️ TypeScript\nOrchestrator"]:::orch
+    E{"✅ Valid\nS3 Event?"}:::gate
+    F(["🔁 Keep\nPolling"]):::skip
+    G["🚀 ECS Fargate\nTask Launcher"]:::ecs
+    H["🐳 Docker\nContainer"]:::docker
+    I(["⚡ FFmpeg\nTranscoder"]):::ffmpeg
+    J["🎬 360p\n480×360"]:::r360
+    K["🎬 480p\n858×480"]:::r480
+    L["🎬 720p\n1280×720"]:::r720
+    M[("🪣 S3\nOutput Bucket")]:::s3out
+    N(["🗑️ Delete SQS\nMessage"]):::clean
+
+    A -->|"raw .mp4"| B
+    B -->|"S3 Event"| C
+    C -->|"ReceiveMessage"| D
+    D --> E
+    E -- "No" --> F
+    F -->|"retry"| C
+    E -- "Yes" --> G
+    G -->|"BUCKET + KEY"| H
+    H -->|"Download"| B
+    H --> I
+    I --> J & K & L
+    J & K & L -->|"Upload"| M
+    D -->|"DeleteMessage"| N
+
+    classDef user    fill:#6366f1,stroke:#4338ca,color:#fff,font-weight:bold
+    classDef s3raw   fill:#ea580c,stroke:#c2410c,color:#fff,font-weight:bold
+    classDef sqs     fill:#db2777,stroke:#be185d,color:#fff,font-weight:bold
+    classDef orch    fill:#0891b2,stroke:#0e7490,color:#fff,font-weight:bold
+    classDef gate    fill:#7c3aed,stroke:#6d28d9,color:#fff,font-weight:bold
+    classDef skip    fill:#475569,stroke:#334155,color:#fff
+    classDef ecs     fill:#f97316,stroke:#ea580c,color:#fff,font-weight:bold
+    classDef docker  fill:#2563eb,stroke:#1d4ed8,color:#fff,font-weight:bold
+    classDef ffmpeg  fill:#16a34a,stroke:#15803d,color:#fff,font-weight:bold
+    classDef r360    fill:#e11d48,stroke:#be123c,color:#fff,font-weight:bold
+    classDef r480    fill:#9333ea,stroke:#7e22ce,color:#fff,font-weight:bold
+    classDef r720    fill:#1d4ed8,stroke:#1e3a8a,color:#fff,font-weight:bold
+    classDef s3out   fill:#d97706,stroke:#b45309,color:#fff,font-weight:bold
+    classDef clean   fill:#065f46,stroke:#064e3b,color:#fff,font-weight:bold
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="tech-row">
+    <span class="tech t1">TypeScript</span>
+    <span class="tech t1">Node.js</span>
+    <span class="tech t2">AWS S3</span>
+    <span class="tech t5">AWS SQS</span>
+    <span class="tech t2">AWS ECS Fargate</span>
+    <span class="tech t4">FFmpeg</span>
+    <span class="tech t6">Docker</span>
+    <span class="tech t7">fluent-ffmpeg</span>
+    <span class="tech t3">Event-Driven Architecture</span>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="author">
+      Built by <strong>Taimoor Hussain</strong> — inspired by how YouTube serves 144p → 720p
+    </div>
+    <div class="date-badge">📅 September 1, 2025</div>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#1a1f2e',
+      primaryColor: '#6366f1',
+      primaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#4338ca',
+      lineColor: '#6366f1',
+      secondaryColor: '#1e293b',
+      tertiaryColor: '#0f172a',
+      edgeLabelBackground: '#1e293b',
+      fontSize: '15px',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 50,
+      rankSpacing: 70,
+    }
+  });
+</script>
+</body>
+</html>

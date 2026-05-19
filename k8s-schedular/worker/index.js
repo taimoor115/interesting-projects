@@ -1,8 +1,8 @@
 import { Worker } from "bullmq";
+import Docker from "dockerode";
 import { eq, inArray, sql } from "drizzle-orm";
 import db from "../db/index.js";
 import { jobsTable, jobStatusEnumValues } from "../db/schema.js";
-import Docker from "dockerode";
 const docker = new Docker({
   socketPath: "//./pipe/docker_engine",
 });
